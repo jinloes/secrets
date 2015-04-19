@@ -1,0 +1,8 @@
+<div ng-if="authenticated">
+    <h1>Welcome back {{user.first_name}}!</h1>
+    <p>Please take a look at your secrets:</p>
+</div>
+<div ng-if="!authenticated">
+    <h1>Welcome to your secrets!</h1>
+    <p>Please login to being creating and storing your secrets.</p>
+</div>
