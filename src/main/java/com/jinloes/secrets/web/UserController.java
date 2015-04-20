@@ -2,7 +2,6 @@ package com.jinloes.secrets.web;
 
 import java.util.UUID;
 
-import com.jinloes.secrets.api.SecretRepository;
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
@@ -10,6 +9,7 @@ import com.jinloes.secrets.resources.secret.SecretResource;
 import com.jinloes.secrets.resources.secret.SecretResourceAssembler;
 import com.jinloes.secrets.resources.user.UserResource;
 import com.jinloes.secrets.resources.user.UserResourceAssembler;
+import com.jinloes.secrets.service.api.SecretService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -31,31 +31,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
     private final UserRepository userRepository;
-    private final SecretRepository secretRepository;
+    private final SecretService secretService;
     private final UserResourceAssembler userResourceAssembler;
     private final SecretResourceAssembler secretResourceAssembler;
 
     @Autowired
-    public UserController(UserRepository userRepository, SecretRepository secretRepository,
+    public UserController(UserRepository userRepository, SecretService secretService,
             UserResourceAssembler userResourceAssembler,
             SecretResourceAssembler secretResourceAssembler) {
         this.userRepository = userRepository;
-        this.secretRepository = secretRepository;
+        this.secretService = secretService;
         this.userResourceAssembler = userResourceAssembler;
         this.secretResourceAssembler = secretResourceAssembler;
     }
 
+    /**
+     * Returns the currently logged in user.
+     *
+     * @param currentUser currently logged in user
+     * @return currently logged in user
+     */
     @RequestMapping(method = RequestMethod.GET)
     public UserResource user(@AuthenticationPrincipal User currentUser) {
         return userResourceAssembler.toResource(currentUser);
     }
 
+    /**
+     * Returns a user's secrets.
+     *
+     * @param userId    user id  to retrieve secrets for
+     * @param pageable  pageable object, determines the page size, sort, etc
+     * @param assembler paged resources assembler
+     * @return secret resource page
+     */
     @RequestMapping(value = "/{userId}/secrets", method = RequestMethod.GET)
     public PagedResources<SecretResource> getSecrets(@PathVariable("userId") UUID userId,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             PagedResourcesAssembler<Secret> assembler) {
         User user = userRepository.getOne(userId);
-        return assembler.toResource(secretRepository.findByCreatedBy(userId, pageable),
+        return assembler.toResource(secretService.getByCreatedBy(user, pageable),
                 secretResourceAssembler);
     }
 }

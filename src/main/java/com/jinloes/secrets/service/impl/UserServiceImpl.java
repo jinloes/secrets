@@ -1,4 +1,4 @@
-package com.jinloes.secrets.impl;
+package com.jinloes.secrets.service.impl;
 
 import com.jinloes.secrets.api.UserRepository;
 

@@ -8,35 +8,37 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.User;
+import com.jinloes.secrets.service.impl.DelegatingPermissionEvaluator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.authentication.builders
         .AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers
         .GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.method.configuration
+        .EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration
+        .GlobalMethodSecurityConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Application configuration. Defines beans and/or configuration for the project.
  */
 @SpringBootApplication
-
 @EnableResourceServer
 public class Application extends RepositoryRestMvcConfiguration {
 
@@ -59,14 +61,6 @@ public class Application extends RepositoryRestMvcConfiguration {
         User user = new User("user@email.com", "Joe", "Somebody",
                 "$2a$15$9lMwQaD/OPMnru.W3fEQU.O2jXXCuOOz9fVUH5CMbc7m1MXrU9yTm"); // pw = password
         userRepository.save(user);
-    }
-
-    @Autowired
-    private DefaultTokenServices defaultTokenServices;
-
-    @RequestMapping(value = "/oauth/revoke", method = RequestMethod.POST)
-    public void create(@RequestParam("token") String value) throws InvalidClientException {
-        defaultTokenServices.revokeToken(value);
     }
 
     @Configuration

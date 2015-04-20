@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.persistence.Entity;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -68,5 +69,15 @@ public class User extends AuditedEntity implements UserDetails {
 
     public String getLastName() {
         return lastName;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("email", email)
+                .append("firstName", firstName)
+                .append("lastName", lastName)
+                .append("password", "*****")
+                .toString();
     }
 }
