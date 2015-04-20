@@ -1,5 +1,7 @@
 package com.jinloes.secrets;
 
+import javax.annotation.PostConstruct;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -20,6 +22,8 @@ import org.springframework.security.config.annotation.authentication.configurers
         .GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -48,7 +52,10 @@ public class Application extends RepositoryRestMvcConfiguration {
     }
 
     @Autowired
-    public void init(UserRepository userRepository) {
+    private UserRepository userRepository;
+
+    @PostConstruct
+    public void init() {
         User user = new User("user@email.com", "Joe", "Somebody",
                 "$2a$15$9lMwQaD/OPMnru.W3fEQU.O2jXXCuOOz9fVUH5CMbc7m1MXrU9yTm"); // pw = password
         userRepository.save(user);
@@ -82,11 +89,18 @@ public class Application extends RepositoryRestMvcConfiguration {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper()
+        return new ObjectMapper()
                 .registerModule(new JodaModule())
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true);
-        return mapper;
+    }
+
+    @Bean
+    public TextEncryptor encryptor() {
+        // Requires unlimited strength JCE to be installed:
+        // http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
+        // http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+        return Encryptors.text("mySecret", "abc123");
     }
 }

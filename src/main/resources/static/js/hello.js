@@ -68,7 +68,7 @@ var app = angular.module('hello', ['angular-oauth2', 'ngRoute', 'ipCookie', 'Loc
                 $http.post("http://localhost:8080/secrets", $scope.secret).success(function (data) {
                     $http.get("http://localhost:8080/users/" + localStorageService.get("userId") + "/secrets")
                         .success(function (data) {
-                            $scope.secrets = data.content;
+                            $scope.secrets = data._embedded.secretResources;
                         });
                 });
             }
