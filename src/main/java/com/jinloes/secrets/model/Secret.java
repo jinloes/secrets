@@ -19,4 +19,8 @@ public class Secret extends AuditedEntity {
     public Secret(@JsonProperty("secret") String secret) {
         this.secret = secret;
     }
+
+    public String getSecret() {
+        return secret;
+    }
 }

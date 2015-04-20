@@ -1,6 +1,14 @@
 <div ng-if="authenticated">
     <h1>Welcome back {{user.first_name}}!</h1>
-    <p>Please take a look at your secrets:</p>
+    <h3>Your Stored secrets:</h3>
+    <div class="alert alert-info" role="alert" ng-hide="secrets && secrets.length > 0">
+        There are no stored secrets yet.
+    </div>
+    <div class="form-group" ng-repeat="secret in secrets">
+        <div class="checkbox col-xs-9">
+            <label>{{secret.secret}}</label>
+        </div>
+    </div>
 </div>
 <div ng-if="!authenticated">
     <h1>Welcome to your secrets!</h1>

@@ -1,7 +1,9 @@
 package com.jinloes.secrets;
 
-import java.security.Principal;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.User;
 
@@ -10,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.security.config.annotation.authentication.builders
         .AuthenticationManagerBuilder;
@@ -24,8 +27,6 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 /**
  * Application configuration. Defines beans and/or configuration for the project.
@@ -66,6 +67,7 @@ public class Application extends RepositoryRestMvcConfiguration {
             GlobalAuthenticationConfigurerAdapter {
         @Autowired private UserDetailsService userDetailsService;
         @Autowired private PasswordEncoder passwordEncoder;
+
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception {
             auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
@@ -75,5 +77,16 @@ public class Application extends RepositoryRestMvcConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(HASH_WORK_FACTOR);
+    }
+
+    @Bean
+    @Primary
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper()
+                .registerModule(new JodaModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true);
+        return mapper;
     }
 }

@@ -1,13 +1,23 @@
 package com.jinloes.secrets.web;
 
+import java.util.UUID;
+
+import com.jinloes.secrets.api.SecretRepository;
+import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 import com.jinloes.secrets.resources.user.UserResource;
 import com.jinloes.secrets.resources.user.UserResourceAssembler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -16,15 +26,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ExposesResourceFor(User.class)
 public class UserController {
+    private final UserRepository userRepository;
+    private final SecretRepository secretRepository;
     private final UserResourceAssembler userResourceAssembler;
 
     @Autowired
-    public UserController(UserResourceAssembler userResourceAssembler) {
+    public UserController(UserRepository userRepository, SecretRepository secretRepository,
+            UserResourceAssembler userResourceAssembler) {
+        this.userRepository = userRepository;
+        this.secretRepository = secretRepository;
         this.userResourceAssembler = userResourceAssembler;
     }
 
     @RequestMapping("/user")
     public UserResource user(@AuthenticationPrincipal User currentUser) {
         return userResourceAssembler.toResource(currentUser);
+    }
+
+    @RequestMapping(value = "/users/{userId}/secrets", method = RequestMethod.GET)
+    public Page<Secret> getSecrets(@PathVariable("userId") UUID userId,
+            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        User user = userRepository.getOne(userId);
+        return secretRepository.findByCreatedBy(userId, pageable);
     }
 }

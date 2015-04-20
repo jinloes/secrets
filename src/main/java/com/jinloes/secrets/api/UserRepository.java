@@ -7,7 +7,7 @@ import com.jinloes.secrets.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * A repository for interacting with users using JPA.
+ * JPA repository for {@link User} objects.
  */
 public interface UserRepository extends JpaRepository<User, UUID> {
     /**
