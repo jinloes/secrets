@@ -1,4 +1,4 @@
-package com.jinloes.secrets;
+package com.jinloes.secrets.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

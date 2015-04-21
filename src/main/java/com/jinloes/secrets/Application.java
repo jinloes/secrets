@@ -1,5 +1,7 @@
 package com.jinloes.secrets;
 
+import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -8,26 +10,18 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.User;
-import com.jinloes.secrets.service.impl.DelegatingPermissionEvaluator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.authentication.builders
         .AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers
         .GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.method.configuration
-        .EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration
-        .GlobalMethodSecurityConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
