@@ -2,6 +2,7 @@ package com.jinloes.secrets.resources.user;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.ResourceSupport;
@@ -15,7 +16,10 @@ public class UserResource extends ResourceSupport {
     private String firstName;
     private String lastName;
 
-    public UserResource(String email, String firstName, UUID id, String lastName) {
+    @JsonCreator
+    public UserResource(@JsonProperty("email") String email,
+            @JsonProperty("first_name") String firstName, @JsonProperty("id") UUID id,
+            @JsonProperty("last_name") String lastName) {
         this.email = email;
         this.firstName = firstName;
         this.id = id;

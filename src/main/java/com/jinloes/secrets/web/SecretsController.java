@@ -5,6 +5,7 @@ import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
@@ -24,18 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecretsController {
     private final SecretRepository secretRepository;
     private final TextEncryptor encryptor;
+    private final EntityLinks entityLinks;
 
     @Autowired
-    public SecretsController(SecretRepository secretRepository, TextEncryptor encryptor) {
+    public SecretsController(SecretRepository secretRepository, TextEncryptor encryptor,
+            EntityLinks entityLinks) {
         this.secretRepository = secretRepository;
         this.encryptor = encryptor;
+        this.entityLinks = entityLinks;
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void createSecret(@RequestBody Secret secret, @AuthenticationPrincipal User user) {
+    public CreatedResourceResponse createSecret(@RequestBody Secret secret,
+            @AuthenticationPrincipal User user) {
         secret.setCreatedBy(user.getId());
         secret.setSecret(encryptor.encrypt(secret.getSecret()));
-        secretRepository.save(secret);
+        Secret createdSecret = secretRepository.save(secret);
+        return new CreatedResourceResponse(createdSecret.getId(), entityLinks, Secret.class);
     }
 }
