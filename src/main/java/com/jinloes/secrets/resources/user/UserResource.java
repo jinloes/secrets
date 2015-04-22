@@ -1,7 +1,5 @@
 package com.jinloes.secrets.resources.user;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,14 +9,14 @@ import org.springframework.hateoas.ResourceSupport;
  * Models a user resource object that is returned by the API.
  */
 public class UserResource extends ResourceSupport {
-    private UUID id;
+    private String id;
     private String email;
     private String firstName;
     private String lastName;
 
     @JsonCreator
     public UserResource(@JsonProperty("email") String email,
-            @JsonProperty("first_name") String firstName, @JsonProperty("id") UUID id,
+            @JsonProperty("first_name") String firstName, @JsonProperty("id") String id,
             @JsonProperty("last_name") String lastName) {
         this.email = email;
         this.firstName = firstName;
@@ -36,7 +34,7 @@ public class UserResource extends ResourceSupport {
     }
 
     @JsonProperty("id")
-    public UUID getResourceId() {
+    public String getResourceId() {
         return id;
     }
 

@@ -1,25 +1,23 @@
 package com.jinloes.secrets.web;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * Models a response from creating an object.
+ * Models a response from modifying (creating/updating) an object.
  */
-public class CreatedResourceResponse extends ResourceSupport {
-    private UUID id;
+public class ModifiedResourceResponse extends ResourceSupport {
+    private String id;
 
-    public CreatedResourceResponse(UUID id, EntityLinks entityLinks, Class<?> resourceClass) {
+    public ModifiedResourceResponse(String id, EntityLinks entityLinks, Class<?> resourceClass) {
         this.id = id;
         add(entityLinks.linkToSingleResource(resourceClass, id).withSelfRel());
     }
 
     @JsonProperty("id")
-    public UUID getResourceId() {
+    public String getResourceId() {
         return id;
     }
 }

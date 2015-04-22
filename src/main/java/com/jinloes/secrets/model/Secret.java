@@ -1,14 +1,14 @@
 package com.jinloes.secrets.model;
 
-import javax.persistence.Entity;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Models a secret
  */
-@Entity
+@Document
 public class Secret extends AuditedEntity {
     private String secret;
 

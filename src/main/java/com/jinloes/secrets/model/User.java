@@ -2,16 +2,15 @@ package com.jinloes.secrets.model;
 
 import java.util.Collection;
 
-import javax.persistence.Entity;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Models a user of the system.
  */
-@Entity
+@Document
 public class User extends AuditedEntity implements UserDetails {
     private String firstName;
     private String lastName;

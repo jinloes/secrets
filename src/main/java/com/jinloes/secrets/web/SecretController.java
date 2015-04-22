@@ -1,7 +1,5 @@
 package com.jinloes.secrets.web;
 
-import java.util.UUID;
-
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 import com.jinloes.secrets.resources.secret.SecretResource;
@@ -28,13 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ExposesResourceFor(Secret.class)
 @RequestMapping("/secrets")
-public class SecretsController {
+public class SecretController {
     private final SecretService secretService;
     private final SecretResourceAssembler secretResourceAssembler;
     private final EntityLinks entityLinks;
 
     @Autowired
-    public SecretsController(SecretService secretService,
+    public SecretController(SecretService secretService,
             SecretResourceAssembler secretResourceAssembler, EntityLinks entityLinks) {
         this.secretService = secretService;
         this.secretResourceAssembler = secretResourceAssembler;
@@ -50,10 +48,10 @@ public class SecretsController {
      */
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public CreatedResourceResponse createSecret(@RequestBody Secret secret,
+    public ModifiedResourceResponse createSecret(@RequestBody Secret secret,
             @AuthenticationPrincipal User user) {
         Secret createdSecret = secretService.save(secret, user);
-        return new CreatedResourceResponse(createdSecret.getId(), entityLinks, Secret.class);
+        return new ModifiedResourceResponse(createdSecret.getId(), entityLinks, Secret.class);
     }
 
     /**
@@ -64,13 +62,36 @@ public class SecretsController {
      * otherwise {@link ResourceNotFoundException} will be thrown.
      */
     @RequestMapping(value = "/{secretId}", method = RequestMethod.GET)
-    public SecretResource getSecret(@PathVariable("secretId") UUID secretId) {
-        if (!secretService.exists(secretId)) {
-            throw new ResourceNotFoundException();
-        }
+    public SecretResource getSecret(@PathVariable("secretId") String secretId) {
         Secret secret = secretService.getSecret(secretId);
         RestPreconditions.checkNotNull(secret);
         return secretResourceAssembler.toResource(secret);
+    }
+
+    /**
+     * Deletes a secret.
+     *
+     * @param secretId     secret id
+     * @param secretUpdate secret update request
+     * @param user         currently logged in user
+     * @return modified resource response
+     */
+    @RequestMapping(value = "/{secretId}", method = RequestMethod.PUT)
+    public ModifiedResourceResponse updateSecret(@PathVariable("secretId") String secretId,
+            @RequestBody Secret secretUpdate, @AuthenticationPrincipal User user) {
+        Secret secret = secretService.getSecret(secretId);
+        RestPreconditions.checkNotNull(secret);
+        secretService.update(secretUpdate, secret, user);
+        return new ModifiedResourceResponse(secretId, entityLinks, Secret.class);
+    }
+
+    @RequestMapping(value = "/{secretId}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSecret(@PathVariable("secretId") String secretId,
+            @AuthenticationPrincipal User user) {
+        Secret secret = secretService.getSecret(secretId);
+        RestPreconditions.checkNotNull(secret);
+        secretService.delete(secret, user);
     }
 
 }

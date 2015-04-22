@@ -1,7 +1,7 @@
 package com.jinloes.secrets.resources.secret;
 
 import com.jinloes.secrets.model.Secret;
-import com.jinloes.secrets.web.SecretsController;
+import com.jinloes.secrets.web.SecretController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
@@ -17,7 +17,7 @@ public class SecretResourceAssembler extends ResourceAssemblerSupport<Secret, Se
 
     @Autowired
     public SecretResourceAssembler(TextEncryptor encryptor) {
-        super(SecretsController.class, SecretResource.class);
+        super(SecretController.class, SecretResource.class);
         this.encryptor = encryptor;
     }
 

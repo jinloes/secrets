@@ -10,7 +10,6 @@ import com.jinloes.secrets.model.AuditedEntity;
 import com.jinloes.secrets.model.User;
 import com.jinloes.secrets.service.api.BasePermissionEvaluator;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.PermissionEvaluator;
@@ -40,7 +39,7 @@ public class DelegatingPermissionEvaluator implements PermissionEvaluator {
             return true;
         }
         // Hibernate proxies objects for lazy initialization we need to get the true class
-        PermissionEvaluator delegate = getEvaluator(Hibernate.getClass(targetDomainObject));
+        PermissionEvaluator delegate = getEvaluator(targetDomainObject.getClass());
         return delegate.hasPermission(authentication, targetDomainObject, permission);
     }
 

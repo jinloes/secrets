@@ -2,6 +2,7 @@ package com.jinloes.secrets;
 
 import java.net.URI;
 
+import com.google.common.collect.Lists;
 import com.jinloes.secrets.api.SecretRepository;
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
@@ -33,10 +34,11 @@ public class BaseIntegrationTest {
         userRepository.deleteAll();
         user = new User("user@email.com", "Joe", "Somebody",
                 "$2a$15$9lMwQaD/OPMnru.W3fEQU.O2jXXCuOOz9fVUH5CMbc7m1MXrU9yTm"); // pw = password
+        user.setId("ddc1f9f3-2e8e-47ce-b388-27624d964288");
         user2 = new User("user2@email.com", "John", "Doe",
                 "$2a$15$9lMwQaD/OPMnru.W3fEQU.O2jXXCuOOz9fVUH5CMbc7m1MXrU9yTm"); // pw = password
-        user = userRepository.save(user);
-        user2 = userRepository.save(user2);
+        user2.setId("17bedad6-df95-4adc-87ee-de9350f1daf4");
+        userRepository.insert(Lists.newArrayList(user, user2));
     }
 
     /**
@@ -51,8 +53,7 @@ public class BaseIntegrationTest {
         secret.setCreatedBy(user.getId());
         secret2 = new Secret(encryptor.encrypt("secret2"));
         secret2.setCreatedBy(user.getId());
-        secret = secretRepository.save(secret);
-        secret2 = secretRepository.save(secret2);
+        secretRepository.save(Lists.newArrayList(secret, secret2));
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.jinloes.secrets;
 
-import java.util.UUID;
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 
@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.security.config.annotation.authentication.builders
         .AuthenticationManagerBuilder;
@@ -28,6 +29,15 @@ import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 
 /**
  * Application configuration. Defines beans and/or configuration for the project.
@@ -49,11 +59,24 @@ public class Application extends RepositoryRestMvcConfiguration {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private Environment environment;
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
+        MongodStarter starter = MongodStarter.getDefaultInstance();
+        int port = 12345;
+        IMongodConfig mongodConfig = new MongodConfigBuilder()
+                .version(Version.Main.PRODUCTION)
+                .net(new Net(port, Network.localhostIsIPv6()))
+                .build();
+
+        MongodExecutable mongodExecutable = starter.prepare(mongodConfig);
+        MongodProcess mongod = mongodExecutable.start();
+        // Bootstrap user
         User user = new User("user@email.com", "Joe", "Somebody",
                 "$2a$15$9lMwQaD/OPMnru.W3fEQU.O2jXXCuOOz9fVUH5CMbc7m1MXrU9yTm"); // pw = password
+        user.setId("ddc1f9f3-2e8e-47ce-b388-27624d964288");
         userRepository.save(user);
     }
 

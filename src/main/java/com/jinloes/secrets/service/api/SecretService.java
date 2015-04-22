@@ -1,7 +1,5 @@
 package com.jinloes.secrets.service.api;
 
-import java.util.UUID;
-
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 
@@ -18,7 +16,7 @@ public interface SecretService {
      * @param secretId secret id
      * @return true if the secret exists, otherwise false
      */
-    boolean exists(UUID secretId);
+    boolean exists(String secretId);
 
     /**
      * Saves a secret
@@ -35,7 +33,7 @@ public interface SecretService {
      * @param secretId secret id
      * @return secret
      */
-    Secret getSecret(UUID secretId);
+    Secret getSecret(String secretId);
 
     /**
      * Gets secrets created by a user.
@@ -45,4 +43,20 @@ public interface SecretService {
      * @return secret page
      */
     Page<Secret> getByCreatedBy(User createdBy, Pageable pageable);
+
+    /**
+     * Updates a secret.
+     *
+     * @param secretUpdate secret update object
+     * @param secret       secret
+     * @param user         currently logged in user
+     */
+    void update(Secret secretUpdate, Secret secret, User user);
+
+    /**
+     * Deletes a secret.
+     *
+     * @param secret secret
+     */
+    void delete(Secret secret, User user);
 }

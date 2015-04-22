@@ -1,15 +1,13 @@
 package com.jinloes.secrets.api;
 
-import java.util.UUID;
-
 import com.jinloes.secrets.model.User;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * JPA repository for {@link User} objects.
+ * Mongo repository for {@link User} objects.
  */
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends MongoRepository<User, String> {
     /**
      * Finds a user by email;
      *

@@ -1,40 +1,32 @@
 package com.jinloes.secrets.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Auditable;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Base class for audited entities.
  */
-@MappedSuperclass
-public abstract class AuditedEntity implements Auditable<UUID, UUID> {
+public abstract class AuditedEntity implements Auditable<String, String> {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
-    private UUID id;
-    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    @Field("_id")
+    private String id;
     private DateTime createdDate;
-    private UUID createdBy;
-    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    private String createdBy;
     private DateTime modifiedDate;
-    private UUID modifiedBy;
+    private String modifiedBy;
 
     @Override
-    public UUID getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
     @Override
-    public void setCreatedBy(UUID createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -49,12 +41,12 @@ public abstract class AuditedEntity implements Auditable<UUID, UUID> {
     }
 
     @Override
-    public UUID getLastModifiedBy() {
+    public String getLastModifiedBy() {
         return modifiedBy;
     }
 
     @Override
-    public void setLastModifiedBy(UUID modifiedBy) {
+    public void setLastModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
@@ -65,25 +57,20 @@ public abstract class AuditedEntity implements Auditable<UUID, UUID> {
 
     @Override
     public void setLastModifiedDate(DateTime lastModifiedDate) {
-        this.modifiedDate = modifiedDate;
+        this.modifiedDate = lastModifiedDate;
     }
 
     @Override
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     @Override
     public boolean isNew() {
         return false;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdDate = new DateTime();
     }
 }

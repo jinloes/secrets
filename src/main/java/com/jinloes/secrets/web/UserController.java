@@ -1,7 +1,5 @@
 package com.jinloes.secrets.web;
 
-import java.util.UUID;
-
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
@@ -10,6 +8,7 @@ import com.jinloes.secrets.resources.secret.SecretResourceAssembler;
 import com.jinloes.secrets.resources.user.UserResource;
 import com.jinloes.secrets.resources.user.UserResourceAssembler;
 import com.jinloes.secrets.service.api.SecretService;
+import com.jinloes.secrets.util.RestPreconditions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -65,10 +64,11 @@ public class UserController {
      * @return secret resource page
      */
     @RequestMapping(value = "/{userId}/secrets", method = RequestMethod.GET)
-    public PagedResources<SecretResource> getSecrets(@PathVariable("userId") UUID userId,
+    public PagedResources<SecretResource> getSecrets(@PathVariable("userId") String userId,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             PagedResourcesAssembler<Secret> assembler) {
-        User user = userRepository.getOne(userId);
+        User user = userRepository.findOne(userId);
+        RestPreconditions.checkNotNull(user);
         return assembler.toResource(secretService.getByCreatedBy(user, pageable),
                 secretResourceAssembler);
     }
