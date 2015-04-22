@@ -2,7 +2,6 @@ package com.jinloes.secrets;
 
 import java.net.URI;
 
-import com.google.common.collect.Lists;
 import com.jinloes.secrets.api.SecretRepository;
 import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
@@ -52,7 +51,8 @@ public class BaseIntegrationTest {
         secret.setCreatedBy(user.getId());
         secret2 = new Secret(encryptor.encrypt("secret2"));
         secret2.setCreatedBy(user.getId());
-        secretRepository.save(Lists.newArrayList(secret, secret2));
+        secret = secretRepository.save(secret);
+        secret2 = secretRepository.save(secret2);
     }
 
     /**

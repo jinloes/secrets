@@ -10,7 +10,6 @@ import com.jinloes.secrets.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
 
 import org.apache.commons.io.IOUtils;
-import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +57,7 @@ public class SecretsControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @Transactional
-    public void testGetCurrentUser() throws Exception {
+    public void testCreateSecret() throws Exception {
         OAuth2AccessToken accessToken = getAccessToken(baseUri, "user@email.com", "password");
         String secretId = RestAssured.given()
                 .header("Authorization", "Bearer " + accessToken.getValue())
@@ -68,11 +67,49 @@ public class SecretsControllerIntegrationTest extends BaseIntegrationTest {
                 .when()
                 .post("/secrets")
                 .then()
-                .log().all()
+                .log().ifError()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().jsonPath().get("id");
         Secret createdSecret = secretRepository.getOne(UUID.fromString(secretId));
         assertThat(createdSecret, notNullValue());
         assertThat(encryptor.decrypt(createdSecret.getSecret()), is("mySecret"));
+    }
+
+    @Test
+    public void testGetSecret() throws Exception {
+        OAuth2AccessToken accessToken = getAccessToken(baseUri, "user@email.com", "password");
+        RestAssured.given()
+                .header("Authorization", "Bearer " + accessToken.getValue())
+                .when()
+                .get("/secrets/{secretId}", secret.getId())
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", is(secret.getId().toString()))
+                .body("secret", is(encryptor.decrypt(secret.getSecret())));
+    }
+
+    @Test
+    public void testGetSecretNotFound() throws Exception {
+        OAuth2AccessToken accessToken = getAccessToken(baseUri, "user@email.com", "password");
+        RestAssured.given()
+                .header("Authorization", "Bearer " + accessToken.getValue())
+                .when()
+                .get("/secrets/{secretId}", UUID.randomUUID())
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void testGetSecretInvalidAuthorization() throws Exception {
+        OAuth2AccessToken accessToken = getAccessToken(baseUri, "user2@email.com", "password");
+        RestAssured.given()
+                .header("Authorization", "Bearer " + accessToken.getValue())
+                .when()
+                .get("/secrets/{secretId}", secret.getId())
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 }
