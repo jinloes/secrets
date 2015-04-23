@@ -9,22 +9,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.repositories.api.UserRepository;
 import com.jinloes.secrets.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoFactoryBean;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.security.config.annotation.authentication.builders
-        .AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers
-        .GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
@@ -46,9 +41,9 @@ import de.flapdoodle.embed.process.runtime.Network;
 @SpringBootApplication
 @EnableResourceServer
 public class Application extends RepositoryRestMvcConfiguration {
-
     public static final int HASH_WORK_FACTOR = 15;
     private MongodProcess mongod;
+    private int mongoPort;
 
     /**
      * Main method to start the application.
@@ -64,14 +59,18 @@ public class Application extends RepositoryRestMvcConfiguration {
     @Autowired
     private Environment environment;
 
+    /**
+     * Bootstraps the application with embedded mongo and a user.
+     *
+     * @throws IOException
+     */
     @PostConstruct
     public void init() throws IOException {
         // Start embedded mongo
         MongodStarter starter = MongodStarter.getDefaultInstance();
-        int port = 12345;
         IMongodConfig mongodConfig = new MongodConfigBuilder()
                 .version(Version.Main.PRODUCTION)
-                .net(new Net(port, Network.localhostIsIPv6()))
+                .net(new Net(mongoPort, Network.localhostIsIPv6()))
                 .build();
 
         MongodExecutable mongodExecutable = starter.prepare(mongodConfig);
@@ -83,6 +82,9 @@ public class Application extends RepositoryRestMvcConfiguration {
         userRepository.save(user);
     }
 
+    /**
+     * Stops embedded mongo
+     */
     @PreDestroy
     public void tearDown() {
         if (mongod != null) {
@@ -90,16 +92,13 @@ public class Application extends RepositoryRestMvcConfiguration {
         }
     }
 
-    @Configuration
-    public static class GlobalAuthtenicationConfiguration extends
-            GlobalAuthenticationConfigurerAdapter {
-        @Autowired private UserDetailsService userDetailsService;
-        @Autowired private PasswordEncoder passwordEncoder;
-
-        @Override
-        public void init(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-        }
+    @Bean
+    public MongoFactoryBean mongo() throws IOException {
+        mongoPort = Network.getFreeServerPort();
+        MongoFactoryBean mongo = new MongoFactoryBean();
+        mongo.setHost("localhost");
+        mongo.setPort(mongoPort);
+        return mongo;
     }
 
     @Bean

@@ -1,7 +1,5 @@
 package com.jinloes.secrets.resources.secret;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.ResourceSupport;

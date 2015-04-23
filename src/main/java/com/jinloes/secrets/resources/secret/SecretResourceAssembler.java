@@ -8,6 +8,9 @@ import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.stereotype.Component;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 /**
  * A resource assembler for creating {@link SecretResource} objects.
  */
@@ -23,6 +26,10 @@ public class SecretResourceAssembler extends ResourceAssemblerSupport<Secret, Se
 
     @Override
     public SecretResource toResource(Secret entity) {
-        return new SecretResource(entity.getId(), encryptor.decrypt(entity.getSecret()));
+        SecretResource resource = new SecretResource(entity.getId(),
+                encryptor.decrypt(entity.getSecret()));
+        resource.add(linkTo(methodOn(SecretController.class).getSecret(entity.getId()))
+                .withSelfRel());
+        return resource;
     }
 }

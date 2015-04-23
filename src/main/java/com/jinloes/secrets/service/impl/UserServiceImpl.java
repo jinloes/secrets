@@ -1,6 +1,6 @@
 package com.jinloes.secrets.service.impl;
 
-import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.repositories.api.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

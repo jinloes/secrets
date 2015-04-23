@@ -3,8 +3,8 @@ package com.jinloes.secrets;
 import java.net.URI;
 
 import com.jayway.restassured.RestAssured;
-import com.jinloes.secrets.api.SecretRepository;
-import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.repositories.api.SecretRepository;
+import com.jinloes.secrets.repositories.api.UserRepository;
 
 import org.junit.Before;
 import org.junit.Test;

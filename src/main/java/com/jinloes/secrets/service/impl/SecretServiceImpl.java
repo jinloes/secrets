@@ -2,7 +2,7 @@ package com.jinloes.secrets.service.impl;
 
 import java.util.UUID;
 
-import com.jinloes.secrets.api.SecretRepository;
+import com.jinloes.secrets.repositories.api.SecretRepository;
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 import com.jinloes.secrets.service.api.SecretService;

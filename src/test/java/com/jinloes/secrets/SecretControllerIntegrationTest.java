@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-import com.jinloes.secrets.api.SecretRepository;
-import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.repositories.api.SecretRepository;
+import com.jinloes.secrets.repositories.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
 
 import org.apache.commons.io.IOUtils;

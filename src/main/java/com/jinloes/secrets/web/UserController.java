@@ -1,6 +1,6 @@
 package com.jinloes.secrets.web;
 
-import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.repositories.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 import com.jinloes.secrets.resources.secret.SecretResource;

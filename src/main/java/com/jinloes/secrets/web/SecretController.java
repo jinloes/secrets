@@ -99,5 +99,4 @@ public class SecretController {
         RestPreconditions.checkNotNull(secret);
         secretService.delete(secret, user);
     }
-
 }

@@ -3,8 +3,8 @@ package com.jinloes.secrets;
 import java.net.URI;
 
 import com.google.common.collect.Lists;
-import com.jinloes.secrets.api.SecretRepository;
-import com.jinloes.secrets.api.UserRepository;
+import com.jinloes.secrets.repositories.api.SecretRepository;
+import com.jinloes.secrets.repositories.api.UserRepository;
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
 
