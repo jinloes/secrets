@@ -68,7 +68,7 @@ var app = angular.module('hello', ['angular-oauth2', 'ngRoute', 'ipCookie', 'Loc
             localStorageService.remove("userId");
         };
     })
-    .controller('home', function ($rootScope, $scope, $http, userService, secretService,
+    .controller('home', function ($rootScope, $scope, $http, $route, userService, secretService,
                                   localStorageService, OAuth) {
         if (OAuth.isAuthenticated()) {
             $rootScope.authenticated = true;
@@ -77,6 +77,15 @@ var app = angular.module('hello', ['angular-oauth2', 'ngRoute', 'ipCookie', 'Loc
                     localStorageService.set("userId", data.id)
                     $scope.user = {};
                     $scope.user.first_name = data.first_name;
+                })
+                .error(function(data, status) {
+                    if(status == 401) {
+                        $rootScope.authenticated = false;
+                        ipCookie.remove('token');
+                        localStorageService.remove("accessToken");
+                        localStorageService.remove("userId");
+                        $route.reload();
+                    }
                 });
             $scope.secret = {};
             $scope.createSecret = function () {
