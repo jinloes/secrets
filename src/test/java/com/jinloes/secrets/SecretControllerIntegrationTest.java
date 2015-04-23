@@ -5,11 +5,12 @@ import java.util.UUID;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.repositories.api.SecretRepository;
 import com.jinloes.secrets.repositories.api.UserRepository;
-import com.jinloes.secrets.model.Secret;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,6 +75,26 @@ public class SecretControllerIntegrationTest extends BaseIntegrationTest {
         Secret createdSecret = secretRepository.findOne(secretId);
         assertThat(createdSecret, notNullValue());
         assertThat(encryptor.decrypt(createdSecret.getSecret()), is("mySecret"));
+        assertThat(createdSecret.getCreatedBy(), is(user.getId()));
+        assertThat(createdSecret.getCreatedDate(), notNullValue());
+    }
+
+    @Test
+    public void testCreateNullSecret() throws Exception {
+        OAuth2AccessToken accessToken = getAccessToken(baseUri, "user@email.com", "password");
+        String secretId = RestAssured.given()
+                .header("Authorization", "Bearer " + accessToken.getValue())
+                .body("{}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/secrets")
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().jsonPath().get("id");
+        Secret createdSecret = secretRepository.findOne(secretId);
+        assertThat(createdSecret, notNullValue());
+        assertThat(createdSecret.getSecret(), Matchers.nullValue());
         assertThat(createdSecret.getCreatedBy(), is(user.getId()));
         assertThat(createdSecret.getCreatedDate(), notNullValue());
     }

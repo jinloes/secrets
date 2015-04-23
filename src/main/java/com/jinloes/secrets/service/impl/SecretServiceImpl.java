@@ -2,9 +2,9 @@ package com.jinloes.secrets.service.impl;
 
 import java.util.UUID;
 
-import com.jinloes.secrets.repositories.api.SecretRepository;
 import com.jinloes.secrets.model.Secret;
 import com.jinloes.secrets.model.User;
+import com.jinloes.secrets.repositories.api.SecretRepository;
 import com.jinloes.secrets.service.api.SecretService;
 
 import org.joda.time.DateTime;
@@ -41,7 +41,8 @@ public class SecretServiceImpl implements SecretService {
         secret.setCreatedBy(creator.getId());
         secret.setCreatedDate(DateTime.now());
         // Encrypt the secret
-        secret.setSecret(encryptor.encrypt(secret.getSecret()));
+        String secretStr = secret.getSecret();
+        secret.setSecret(secretStr != null ? encryptor.encrypt(secret.getSecret()) : null);
         return secretRepository.save(secret);
     }
 
@@ -62,7 +63,8 @@ public class SecretServiceImpl implements SecretService {
     public void update(Secret secretUpdate, Secret secret, User user) {
         secret.setLastModifiedBy(user.getId());
         secret.setLastModifiedDate(DateTime.now());
-        secret.setSecret(encryptor.encrypt(secretUpdate.getSecret()));
+        String secretStr = secret.getSecret();
+        secret.setSecret(secretStr != null ? encryptor.encrypt(secretUpdate.getSecret()) : null);
         secretRepository.save(secret);
     }
 
