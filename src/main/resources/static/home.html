@@ -4,21 +4,59 @@
     <form role="form" ng-submit="createSecret()">
         <div class="form-group">
             <label for="secret">Secret:</label>
-            <input type="text" class="form-control" id="secret" name="secret" ng-model="secret.secret"/>
+            <input type="text" class="form-control" id="secret" name="secret"
+                   ng-model="secret.secret"/>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-    <h3>Your Stored secrets:</h3>
-    <div class="alert alert-info" role="alert" ng-hide="secrets && secrets.length > 0">
-        There are no stored secrets yet.
-    </div>
-    <div class="form-group" ng-repeat="secret in secrets">
-        <div class="checkbox col-xs-9">
-            <label>{{secret.secret}}</label>
+    <div ng-controller="ModalCtrl">
+        <div ng-controller="PaginationCtrl">
+            <table class="table table-striped table-bordered">
+                <caption>Your Stored secrets:</caption>
+                <thead>
+                    <tr>
+                        <th>Secret</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="secret in secrets">
+                    <td>{{secret.secret}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger"
+                                ng-click="deleteSecret(secret.id)">
+                            Delete
+                        </button>
+                        <button class="btn btn-default"
+                                ng-click="open('sm', secret.id, secret.secret)">
+                            Update
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"
+                        class="pagination-sm" boundary-links="true"></pagination>
         </div>
+        <script type="text/ng-template" id="myModalContent.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Update your secret!</h3>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <label for="secretUpdate">Secret:</label>
+                    <input id="secretUpdate" type="text" value="{{secret}}" ng-model="secret"/>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="updateSecret(id, secret)">Update</button>
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+            </div>
+        </script>
     </div>
 </div>
 <div ng-if="!authenticated">
     <h1>Welcome to your secrets!</h1>
+
     <p>Please login to being creating and storing your secrets.</p>
 </div>

@@ -60,11 +60,10 @@ public class SecretServiceImpl implements SecretService {
     @Override
     @PreAuthorize("hasPermission(#secret, 'update')")
     public void update(Secret secretUpdate, Secret secret, User user) {
-        secretUpdate.setId(secret.getId());
-        secretUpdate.setLastModifiedBy(user.getId());
-        secretUpdate.setLastModifiedDate(DateTime.now());
-        secretUpdate.setSecret(encryptor.encrypt(secretUpdate.getSecret()));
-        secretRepository.save(secretUpdate);
+        secret.setLastModifiedBy(user.getId());
+        secret.setLastModifiedDate(DateTime.now());
+        secret.setSecret(encryptor.encrypt(secretUpdate.getSecret()));
+        secretRepository.save(secret);
     }
 
     @Override

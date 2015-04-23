@@ -3,6 +3,7 @@ package com.jinloes.secrets;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +48,7 @@ import de.flapdoodle.embed.process.runtime.Network;
 public class Application extends RepositoryRestMvcConfiguration {
 
     public static final int HASH_WORK_FACTOR = 15;
+    private MongodProcess mongod;
 
     /**
      * Main method to start the application.
@@ -64,6 +66,7 @@ public class Application extends RepositoryRestMvcConfiguration {
 
     @PostConstruct
     public void init() throws IOException {
+        // Start embedded mongo
         MongodStarter starter = MongodStarter.getDefaultInstance();
         int port = 12345;
         IMongodConfig mongodConfig = new MongodConfigBuilder()
@@ -72,12 +75,19 @@ public class Application extends RepositoryRestMvcConfiguration {
                 .build();
 
         MongodExecutable mongodExecutable = starter.prepare(mongodConfig);
-        MongodProcess mongod = mongodExecutable.start();
+        mongod = mongodExecutable.start();
         // Bootstrap user
         User user = new User("user@email.com", "Joe", "Somebody",
                 "$2a$15$9lMwQaD/OPMnru.W3fEQU.O2jXXCuOOz9fVUH5CMbc7m1MXrU9yTm"); // pw = password
         user.setId("ddc1f9f3-2e8e-47ce-b388-27624d964288");
         userRepository.save(user);
+    }
+
+    @PreDestroy
+    public void tearDown() {
+        if (mongod != null) {
+            mongod.stop();
+        }
     }
 
     @Configuration

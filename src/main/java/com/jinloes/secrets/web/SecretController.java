@@ -85,6 +85,12 @@ public class SecretController {
         return new ModifiedResourceResponse(secretId, entityLinks, Secret.class);
     }
 
+    /**
+     * Deletes a secret.
+     *
+     * @param secretId secret id
+     * @param user     currently logged in user.
+     */
     @RequestMapping(value = "/{secretId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSecret(@PathVariable("secretId") String secretId,
